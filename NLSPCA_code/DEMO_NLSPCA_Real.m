@@ -17,7 +17,7 @@ addpath('functions')
 addpath('tools')
 
 %% Loading 'Saturn' image
-ima_ori=double(imread('./data/saturn.tif'));
+% ima_ori=double(imread('./data/saturn.tif'));
 GT_Original_image_dir = 'C:\Users\csjunxu\Desktop\CVPR2017\cc_Results\Real_ccnoise_denoised_part\';
 GT_fpath = fullfile(GT_Original_image_dir, '*mean.png');
 TT_Original_image_dir = 'C:\Users\csjunxu\Desktop\CVPR2017\cc_Results\Real_ccnoise_denoised_part\';
@@ -30,7 +30,7 @@ im_num = length(TT_im_dir);
 % Loading 'Saturn' image
 % ima_ori=double(imread('./data/Ridges.png'));
 % %% Noisy image generation
-peak=120; % 120 1 5 10 30 60
+% peak=120; % 120 1 5 10 30 60
 % rand('seed',0)
 % Q = max(max(ima_ori)) /peak;
 % ima_lambda = ima_ori / Q;
@@ -38,7 +38,9 @@ peak=120; % 120 1 5 10 30 60
 % ima_nse_poiss = knuth_poissrnd(ima_lambda);
 % [m,n]=size(ima_nse_poiss);
 %% Parameters:numbers
-method = 'NLPCA';
+
+
+method = 'NLSPCA';
 %% write image directory
 write_sRGB_dir = ['C:/Users/csjunxu/Desktop/CVPR2017/cc_Results/' method '/'];
 if ~isdir(write_sRGB_dir)
@@ -85,34 +87,12 @@ for i = 1 : im_num
     SSIM = [SSIM cal_ssim( IMout*255, IM_GT*255, 0, 0 )];
     fprintf('The final PSNR = %2.4f, SSIM = %2.4f. \n', PSNR(end), SSIM(end));
     %% output
-    imwrite(IMout, [write_sRGB_dir method '_RID_' IMname '.png']);
+    imwrite(IMout, [write_sRGB_dir method '_CC' num2str(im_num) '_' IMname '.png']);
 end
 mPSNR = mean(PSNR);
 mSSIM = mean(SSIM);
 mCCPSNR = mean(CCPSNR);
 mCCSSIM = mean(CCSSIM);
-save(['C:/Users/csjunxu/Desktop/CVPR2017/cc_Results/BM3DPoisson_RID' num2str(im_num) '.mat'],'PSNR','mPSNR','SSIM','mSSIM','CCPSNR','mCCPSNR','CCSSIM','mCCSSIM');
+save(['C:/Users/csjunxu/Desktop/CVPR2017/cc_Results/' method '_CC' num2str(im_num) '.mat'],'PSNR','mPSNR','SSIM','mSSIM','CCPSNR','mCCPSNR','CCSSIM','mCCSSIM');
 
-
-% %% Denoising with NLSPCA
-%
-% tic
-% ima_fil=NLSPCA(ima_nse_poiss,ima_nse_poiss,param);
-% toc
-
-
-
-
-% %% Result display
-% figure('Position',[100 100   1200 600])
-% ax(1) = subplot(1, 3, 1);
-% plotimage(Q * ima_nse_poiss);
-% title(sprintf('Noisy PSNR = %f',csnr(Q*ima_nse_poiss, Q*ima_lambda, 0,0)));
-% ax(2) = subplot(1, 3, 2);
-% plotimage(Q * ima_lambda);
-% title('Original');
-% ax(3) = subplot(1, 3, 3);
-% plotimage(Q * ima_fil);
-% title(sprintf('NLSPCA, PSNR = %f',csnr(Q*ima_fil, Q*ima_lambda, 0,0)));
-% linkaxes(ax);
 
